@@ -1,0 +1,8 @@
+19.04.2022 07:08:28|Gerard|Hej TOmek|Tomek^Gerard
+19.04.2022 07:08:48|Tomek|Co u ciebie Gerard|Tomek^Gerard
+19.04.2022 07:08:51|Tomek| asd asd asd asd |Tomek^Gerard
+19.04.2022 07:08:53|Tomek|sdf sdf sdf sdf |Tomek^Gerard
+19.04.2022 07:57:50|Gerard|Czesc tomi|Tomek^Gerard
+19.04.2022 07:57:57|Tomek|no hej, co u ciebie|Tomek^Gerard
+25.04.2022 10:44:04|gerard|Hej TOmek|tomek^gerard
+25.04.2022 10:44:10|tomek|Hej Gerard|tomek^gerard

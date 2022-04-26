@@ -1,5 +1,6 @@
 package chat.server;
 
+import chat.commons.IOTools;
 import chat.server.repository.MessagesRepo;
 import chat.server.repository.RoomsRepo;
 import chat.server.repository.UsersRepo;
@@ -45,7 +46,7 @@ public class AppServer {
     }
 
     public void startTheServer() {
-        try (ServerSocket server = new ServerSocket(port)) {
+        try (ServerSocket server = new ServerSocket(this.port)) {
             while (true) {
                 log.info("1 - Server is listening...");
                 Socket socket = server.accept();

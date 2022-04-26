@@ -1,6 +1,7 @@
 package chat.client;
 
 import chat.commons.Commands;
+import chat.commons.IOTools;
 import chat.commons.MessageMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,10 @@ public class ClientCommands {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void printAllMyChats(Client client) {
+        IOTools.loadMessageFromFile(client.getClientName()).forEach(System.out::println);
     }
 
     public String findRoomIdByUserNameCommand(Client client) {

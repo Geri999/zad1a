@@ -17,19 +17,7 @@ public class MessagesRepo {
     private Queue<MessageMapper> conversationListLoadedFromDisk = new ConcurrentLinkedQueue<>();
 
 
-    public Queue<MessageMapper> findMessagesByUserName(String userName) {
-        //todo body
-        return null;
-    }
 
-    public void loadConversationListFromDisk() {
-        //todo body
-    }
-
-    public void appendCurrentConversationListToFileOnDisk() {
-        //todo body
-
-    }
 
 
 }

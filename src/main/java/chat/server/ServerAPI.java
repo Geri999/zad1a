@@ -1,5 +1,6 @@
 package chat.server;
 
+import chat.commons.IOTools;
 import chat.commons.MessageMapper;
 import chat.commons.Room;
 import chat.commons.User;
@@ -47,6 +48,12 @@ public class ServerAPI {
             case "$BROADCAST_TEXT_MSG":
                 chat_Text(message);
                 break;
+            case "$SEND_FILE_MSG":
+                IOTools.receiveFile(socket, usersRepo);
+                break;
+            case "$LEAVING_THE_ROOM_REQUEST":
+//                userLeavingRoom(message);//todo
+                break;
         }
     }
 
@@ -60,6 +67,7 @@ public class ServerAPI {
         Room roomById = roomsRepo.findRoomById(roomId);
 
         roomById.broadcastToAllRoomParticipant(message);
+        IOTools.saveMessageToFile(message,roomById);
         log.info("broadcasting text={}", message);
     }
 

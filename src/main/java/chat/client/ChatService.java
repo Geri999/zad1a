@@ -1,6 +1,7 @@
 package chat.client;
 
 import chat.commons.Commands;
+import chat.commons.IOTools;
 import chat.commons.MessageMapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,14 +55,13 @@ public class ChatService {
 
         List<String> allUsersOnline = ClientCommands.userListCommand(client);
 
-        String inputUserName="";
+        String inputUserName = "";
 
         System.out.println(allUsersOnline.stream().collect(Collectors.joining(", ", "Users on-Line: ", ".")));
         System.out.println("\n*** ADDING USERS TO ROOM ***");
         System.out.printf("(Type \"exit\" to finish, \"menu\" to return to main menu.)\n");
 
-        while (!(inputUserName.equalsIgnoreCase("exit")))
-        {
+        while (!(inputUserName.equalsIgnoreCase("exit"))) {
             System.out.print("Please type name to add user to room (\"exit\" to finish): " + client.getPrompt());
             inputUserName = sc.nextLine();
             if (inputUserName.equals("menu")) return null;
@@ -87,14 +87,53 @@ public class ChatService {
     }
 
     private void chatConversation(String roomId) {
-        System.out.println("\n*** CHAT STARTED: ***");
+        System.out.println("\n" + "*".repeat(20) + "CHAT STARTED:" + "*".repeat(20));
         System.out.println("(type @END to stop conversation)");
+        System.out.println("(type @SEND to enter file sending menu)");
+        System.out.println("Ask your other chat participants to enter the room (menu item 4)");
+
+        String text;
+        Scanner sc = new Scanner(System.in);
+        boolean loopCondition = true;
+        String message;
+        while (loopCondition) {
+            switch (text = sc.nextLine()) {
+                case "@end":
+                case "@END":
+                    loopCondition = false;
+                    message = MessageMapper.createChatTxtMessage(Commands.$LEAVING_THE_ROOM_REQUEST, client.getClientName(), roomId, text);
+                    WriterToServer.sendToServer2(message, client);
+                    break;
+                case "@send":
+                case "@SEND":
+                    message = MessageMapper.createChatTxtMessage(Commands.$SEND_FILE_MSG, client.getClientName(), roomId, text);
+                    WriterToServer.sendToServer2(message, client);
+                    IOTools.sendFile(client.getSocket());
+                    log.info("End of @SEND command");
+                    break;
+                default:
+                    message = MessageMapper.createChatTxtMessage(Commands.$BROADCAST_TEXT_MSG, client.getClientName(), roomId, text);
+                    WriterToServer.sendToServer2(message, client);
+                    log.info(Commands.$BROADCAST_TEXT_MSG.toString());
+                    log.info(client.getClientName());
+                    log.info(roomId);
+                    log.info(text);
+            }
+        }
+        System.out.println("**** End of conversation ****");
+    }
+
+    @Deprecated
+    private void chatConversation1(String roomId) {
+        System.out.println("\n" + "*".repeat(20) + "CHAT STARTED:" + "*".repeat(20));
+        System.out.println("(type @END to stop conversation)");
+        System.out.println("(type @SEND to enter file sending menu)");
         System.out.println("Ask your other chat participants to enter the room (menu item 4)");
         String text;
         Scanner sc = new Scanner(System.in);
-        while (!(text = sc.nextLine().toLowerCase()).contains("@end")) {
+        while (!(text = sc.nextLine()).matches("@end|@END")) {
             //todo: sprawdzenie różnych komend wysłanych z serwera np. koniec rozmowy "@END" i itd. easy! Wysłać do servera komenda zakończenia, itp
-            String  message = MessageMapper.createChatTxtMessage(Commands.$BROADCAST_TEXT_MSG, client.getClientName(), roomId, text);
+            String message = MessageMapper.createChatTxtMessage(Commands.$BROADCAST_TEXT_MSG, client.getClientName(), roomId, text);
             log.info(Commands.$BROADCAST_TEXT_MSG.toString());
             log.info(client.getClientName());
             log.info(roomId);
@@ -103,4 +142,6 @@ public class ChatService {
         }
         System.out.println("**** End of conversation ****");
     }
+
+
 }

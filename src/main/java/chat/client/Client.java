@@ -1,6 +1,6 @@
 package chat.client;
 
-import chat.server.IOTools;
+import chat.commons.IOTools;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

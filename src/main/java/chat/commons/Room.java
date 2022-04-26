@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @Slf4j
@@ -33,5 +34,9 @@ public class Room {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String userListToString() {
+        return userListInRoom.stream().map(User::getName).collect(Collectors.joining("^"));
     }
 }

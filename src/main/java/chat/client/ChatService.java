@@ -43,7 +43,7 @@ public class ChatService {
 
     private String checkingIfUserHasActiveChat() {
         String findRoomIdByUserNameMessage = MessageMapper.createFindRoomIdByUserNameMessage(Commands.$FIND_ROOM_ID_BY_USERNAME_MSG, client.getClientName());
-        String roomId = WriterToServer.sendToServer2WithResponse(findRoomIdByUserNameMessage, client);
+        String roomId = WriterToServer.sendToServerWithResponse(findRoomIdByUserNameMessage, client);
         log.info("ID room by UserName={}", roomId);
         return "empty".equals(roomId) ? "empty" : roomId;
     }
@@ -74,7 +74,7 @@ public class ChatService {
         }
 
         String requestForRoomMessage = MessageMapper.createRequestForRoomMessage(Commands.$CREATE_ROOM_REQUEST, usersInvitedToChat);
-        String roomId = WriterToServer.sendToServer2WithResponse(requestForRoomMessage, client);
+        String roomId = WriterToServer.sendToServerWithResponse(requestForRoomMessage, client);
 
         return roomId;
     }
@@ -102,18 +102,18 @@ public class ChatService {
                 case "@END":
                     loopCondition = false;
                     message = MessageMapper.createChatTxtMessage(Commands.$LEAVING_THE_ROOM_REQUEST, client.getClientName(), roomId, text);
-                    WriterToServer.sendToServer2(message, client);
+                    WriterToServer.sendToServer(message, client);
                     break;
                 case "@send":
                 case "@SEND":
                     message = MessageMapper.createChatTxtMessage(Commands.$SEND_FILE_MSG, client.getClientName(), roomId, text);
-                    WriterToServer.sendToServer2(message, client);
+                    WriterToServer.sendToServer(message, client);
                     IOTools.sendFile(client.getSocket());
                     log.info("End of @SEND command");
                     break;
                 default:
                     message = MessageMapper.createChatTxtMessage(Commands.$BROADCAST_TEXT_MSG, client.getClientName(), roomId, text);
-                    WriterToServer.sendToServer2(message, client);
+                    WriterToServer.sendToServer(message, client);
                     log.info(Commands.$BROADCAST_TEXT_MSG.toString());
                     log.info(client.getClientName());
                     log.info(roomId);
@@ -138,7 +138,7 @@ public class ChatService {
             log.info(client.getClientName());
             log.info(roomId);
             log.info(text);
-            WriterToServer.sendToServer2(message, client);
+            WriterToServer.sendToServer(message, client);
         }
         System.out.println("**** End of conversation ****");
     }

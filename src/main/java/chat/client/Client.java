@@ -38,4 +38,17 @@ public class Client {
         }
         log.info("Config data for **CLIENT** loaded...");
     }
+
+
+
+    private boolean checkLoggingStatus() {
+        if (this.isLogged()) return true;
+
+        System.out.println("You are not logged!");
+        return false;
+    }
+
+
+
+
 }

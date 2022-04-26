@@ -49,7 +49,7 @@ public class ServerAPI {
                 chat_Text(message);
                 break;
             case "$SEND_FILE_MSG":
-                IOTools.receiveFile(socket, usersRepo);
+                IOTools.receiveAndSaveFile(socket, usersRepo);
                 break;
             case "$LEAVING_THE_ROOM_REQUEST":
 //                userLeavingRoom(message);//todo

@@ -6,6 +6,7 @@ import chat.commons.MessageMapper;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -15,21 +16,34 @@ import java.util.stream.Collectors;
 @Data
 public class ClientCommands {
 
-    public static boolean loginCommand(Client client) {
+    public static void loginCommand(Client client) {
         if (client.isLogged()) {
             System.out.println("You are logged");
-            return true;
+            return;
         }
+        int counter = 0;
+        while (counter < 3) {
+            System.out.printf("What's your name(Login)? %s", client.getPrompt());
+            String clientName = new Scanner(System.in).nextLine();
+            String loginMessage = MessageMapper.createLoginMessage(Commands.$LOGIN_REQUEST, clientName, client.getSocket());
+            boolean result = Boolean.parseBoolean(WriterToServer.sendToServerWithResponse(loginMessage, client));
 
-        System.out.printf("What's your name? %s", client.getPrompt());
-        String clientName = new Scanner(System.in).nextLine();
-        String loginMessage = MessageMapper.createLoginMessage(Commands.$LOGIN_REQUEST, clientName, client.getSocket());
-//        Message message = new Message(COMMANDS.$LOGIN, new User(clientName, client.getSocket()));
-
-        boolean result = Boolean.parseBoolean(WriterToServer.sendToServer2WithResponse(loginMessage, client));
-        if (!result) System.out.println("You can't login because you're on black list");
-        if (result) client.setClientName(clientName);
-        return result;
+            if (result) {
+                client.setClientName(clientName);
+                client.setLogged(true);
+                return;
+            } else {
+                System.out.println("You can't login because you're on black list or you enter wrong password!");//todo password
+                counter++;
+            }
+        }
+        System.out.printf("", "You can't login. Good bye.");
+        try {
+            client.getSocket().close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        System.exit(0);
     }
 
     public static void createChatCommand(Client client) {
@@ -60,14 +74,14 @@ public class ClientCommands {
 
     public String findRoomIdByUserNameCommand(Client client) {
         String findIdRoomMessage = MessageMapper.createFindRoomIdByUserNameMessage(Commands.$FIND_ROOM_ID_BY_USERNAME_MSG, client.getClientName());
-        return WriterToServer.sendToServer2WithResponse(findIdRoomMessage, client);
+        return WriterToServer.sendToServerWithResponse(findIdRoomMessage, client);
     }
 
 
     public static List<String> userListCommand(Client client) {
         String allUsersListMessage = MessageMapper.createAllUsersListMessage(Commands.$USERS_LIST_REQUEST);
 //        Message message = new Message(COMMANDS.$USERS_LIST, new User(client.getClientName(), client.getSocket()));
-        String serverResponse = WriterToServer.sendToServer2WithResponse(allUsersListMessage, client);
+        String serverResponse = WriterToServer.sendToServerWithResponse(allUsersListMessage, client);
         List<String> usersList = Arrays.asList(serverResponse.split("\\|"));
         return usersList;
     }
@@ -86,6 +100,6 @@ public class ClientCommands {
             return false;
         }
         String exitMessage = MessageMapper.createExitMessage(Commands.$LOGOUT_REQUEST, client.getClientName());
-        return Boolean.parseBoolean(WriterToServer.sendToServer2WithResponse(exitMessage, client));
+        return Boolean.parseBoolean(WriterToServer.sendToServerWithResponse(exitMessage, client));
     }
 }

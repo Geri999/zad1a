@@ -16,7 +16,7 @@ public class WriterToServer {
         this.socket = socket;
     }
 
-    public static void sendToServer2(String message, Client client) {
+    public static void sendToServer(String message, Client client) {
         try {
             PrintWriter output = new PrintWriter(client.getSocket().getOutputStream(), true);
             log.info("Sent to server: {}, socket: {} ", message, client.getSocket());
@@ -27,7 +27,7 @@ public class WriterToServer {
         }
     }
 
-    public static String sendToServer2WithResponse(String message, Client client) {
+    public static String sendToServerWithResponse(String message, Client client) {
         //todo po stronie serwera bedzie ReadMessageFromClient
 
         String answer = "";

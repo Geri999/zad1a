@@ -4,7 +4,6 @@ import chat.server.repository.UsersRepo;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,7 +11,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Slf4j
 public class IOTools {
@@ -104,7 +102,7 @@ public class IOTools {
         try/* (
                 DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
                 DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-        ) */{
+        ) */ {
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             File file = new File(mainPath + separator + fileName);
             FileInputStream fileInputStream = new FileInputStream(file);
@@ -123,7 +121,7 @@ public class IOTools {
         System.out.printf("File %s sent to %s\n", fileName, recipientName);
     }
 
-    public static void receiveFile(Socket socket, UsersRepo usersRepo) {
+    public static void receiveAndSaveFile(Socket socket, UsersRepo usersRepo) {
 
         try
 //                (DataInputStream dataInputStream = new DataInputStream(socket.getInputStream()))
@@ -139,10 +137,12 @@ public class IOTools {
             log.info("Odbiór pliku: znaleziony po Name:{},{}", userByRecipientName.getName(), userByRecipientName.getSocket());
 
             File file = new File(mainPath + separator + downloadFolder + separator + fileName);
-            if (file.exists()) {
-                file = new File(mainPath + separator + downloadFolder + separator + renameFileToAvoidDuplication(fileName));
-            }//todo spradz pliki po kolei
 
+            while (file.exists()) {
+                file = new File(mainPath + separator + downloadFolder + separator + renameFileToAvoidDuplication(file.getName()));
+                log.info("filename={}", fileName);
+                log.info("file.getName()={}", file.getName());
+            }
 
             FileOutputStream fileOutputStream = new FileOutputStream(file);
             log.info("nazwa pliku do nagrania: {}, path: {}", file.getName(), file.getPath());
@@ -159,7 +159,6 @@ public class IOTools {
             throw new RuntimeException(e);
         }
     }
-
 
     public static String renameFileToAvoidDuplication(String fileName) {
         String[] fileNameArray = fileName.split("\\.");

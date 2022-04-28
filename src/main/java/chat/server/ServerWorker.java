@@ -39,8 +39,6 @@ public class ServerWorker implements Runnable {
 
             String message;
             while ((message = inputS.readLine()) != null) {
-//                log.info("w pętli i odczytałem {}", message);
-//                message = Message.parseToMessage2(text);
 
                 log.info("Server received message:{}", message);
                 serverAPI.commandInterpreter(message, output);

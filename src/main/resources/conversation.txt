@@ -8,3 +8,8 @@
 25.04.2022 10:44:10|tomek|Hej Gerard|tomek^gerard
 26.04.2022 10:25:59|Tomek|Hej Gerard tu TOmek.|Gerard^Tomek
 26.04.2022 10:26:07|Gerard|Wiem, wiem.|Gerard^Tomek
+28.04.2022 03:47:10|Tomek|Czesc Gerard dddddd|Tomek^Gerard
+28.04.2022 03:47:23|Tomek|dsadasdas|Tomek^Gerard
+28.04.2022 03:48:01|Tomek|aaaaaaaaaaaaaaaa|Tomek^Gerard
+28.04.2022 03:48:15|Tomek|1|Tomek^Gerard
+28.04.2022 03:48:19|Tomek|2|Tomek^Gerard

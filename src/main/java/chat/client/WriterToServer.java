@@ -28,7 +28,6 @@ public class WriterToServer {
     }
 
     public static String sendToServerWithResponse(String message, Client client) {
-        //todo po stronie serwera bedzie ReadMessageFromClient
 
         String answer = "";
         Socket socket = client.getSocket();

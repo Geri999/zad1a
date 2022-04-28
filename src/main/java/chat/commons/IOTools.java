@@ -51,7 +51,6 @@ public class IOTools {
     }
 
     public static void saveMessageToFile(String message, Room room) {
-        //$BROADCAST_TEXT_MSG|Tomek|9a3f9fd7-db87-45c7-9f20-8aa9739a5bb3|Cześć Gerard
         String users = room.userListToString();
         String[] sm = message.split("\\|");
         String sender = sm[1];
@@ -175,7 +174,6 @@ public class IOTools {
         if (matcher.find()) {
             if (matcher.groupCount() > 1) {
                 i += Integer.parseInt(matcher.group(2).replace("(", "").replace(")", ""));
-//                i++;
             }
             group = matcher.group(1);
         }

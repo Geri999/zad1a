@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Slf4j
 // method #3 by ConcurrentQueue
 public class MessagesRepo {
-//    private List<Message2> conversationList;
 
+    //todo
     private Queue<MessageMapper> conversationListNotSavedOnDisk = new ConcurrentLinkedQueue<>();
     private Queue<MessageMapper> conversationListLoadedFromDisk = new ConcurrentLinkedQueue<>();
 

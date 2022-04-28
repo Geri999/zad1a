@@ -37,7 +37,7 @@ public class ClientCommands {
                 counter++;
             }
         }
-        System.out.printf("", "You can't login. Good bye.");
+        System.out.println("You can't login. Good bye.");
         try {
             client.getSocket().close();
         } catch (IOException e) {
@@ -68,31 +68,24 @@ public class ClientCommands {
         }
     }
 
-    public static void printAllMyChats(Client client) {
+    public static void printAllMyChatsCommand(Client client) {
         IOTools.loadMessageFromFile(client.getClientName()).forEach(System.out::println);
     }
 
-    public String findRoomIdByUserNameCommand(Client client) {
-        String findIdRoomMessage = MessageMapper.createFindRoomIdByUserNameMessage(Commands.$FIND_ROOM_ID_BY_USERNAME_MSG, client.getClientName());
-        return WriterToServer.sendToServerWithResponse(findIdRoomMessage, client);
-    }
 
-
-    public static List<String> userListCommand(Client client) {
+    public static List<String> getUserListCommand(Client client) {
         String allUsersListMessage = MessageMapper.createAllUsersListMessage(Commands.$USERS_LIST_REQUEST);
-//        Message message = new Message(COMMANDS.$USERS_LIST, new User(client.getClientName(), client.getSocket()));
         String serverResponse = WriterToServer.sendToServerWithResponse(allUsersListMessage, client);
         List<String> usersList = Arrays.asList(serverResponse.split("\\|"));
         return usersList;
     }
 
     public static void printUserListCommand(Client client) {
-        String list = userListCommand(client)
+        String list = getUserListCommand(client)
                 .stream()
                 .collect(Collectors.joining(", ", "On-Line users: ", "."));
         System.out.println(list);
     }
-
 
     public static boolean logoutCommand(Client client) {
         if (!client.isLogged()) {

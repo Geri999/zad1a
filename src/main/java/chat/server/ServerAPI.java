@@ -31,33 +31,35 @@ public class ServerAPI {
         log.info(command);
         switch (command) {
             case "$LOGIN_REQUEST":
-                login(message, output);
+                loginUserAndReturnInfoToClient(message, output);
                 break;
             case "$USERS_LIST_REQUEST":
-                userList(output);
+                createAndReturnUserListToServer(output);
                 break;
             case "$LOGOUT_REQUEST":
-                exit(message, output);
+                logoutUserRequest(message, output);
                 break;
             case "$FIND_ROOM_ID_BY_USERNAME_MSG":
-                findRoomIdByUsername(message, output);
+                findAndReturnToClientRoomId(message, output);
                 break;
             case "$CREATE_ROOM_REQUEST":
-                requestForRoom(message, output);
+                createRoomAndReturnInfoToClient(message, output);
                 break;
             case "$BROADCAST_TEXT_MSG":
-                chat_Text(message);
+                receiveAndBrodcastChatText(message);
                 break;
             case "$SEND_FILE_MSG":
                 IOTools.receiveAndSaveFile(socket, usersRepo);
                 break;
             case "$LEAVING_THE_ROOM_REQUEST":
-//                userLeavingRoom(message);//todo
+                receiveAndBrodcastChatText(message);
+                //todo
+                usersRepo.removeUserFromRoom(message);
                 break;
         }
     }
 
-    private void chat_Text(String message) {
+    private void receiveAndBrodcastChatText(String message) {
         String[] splitChat = message.split("\\|");
         String roomId = splitChat[2];
         String text = splitChat[3];
@@ -67,11 +69,11 @@ public class ServerAPI {
         Room roomById = roomsRepo.findRoomById(roomId);
 
         roomById.broadcastToAllRoomParticipant(message);
-        IOTools.saveMessageToFile(message,roomById);
+        IOTools.saveMessageToFile(message, roomById);
         log.info("broadcasting text={}", message);
     }
 
-    private void requestForRoom(String message, PrintWriter output) {
+    private void createRoomAndReturnInfoToClient(String message, PrintWriter output) {
         String s = message.split("\\|")[1];
         List<String> userNameForRoomList = MessageMapper.stringToListParser(s);
 
@@ -87,10 +89,11 @@ public class ServerAPI {
         output.println(room.getRoomId());
     }
 
-    private void findRoomIdByUsername(String message, PrintWriter output) {
+    //todo przenieść do roomRepo
+    private void findAndReturnToClientRoomId(String message, PrintWriter output) {
         //find one room only
         User user = usersRepo.findUserByName(message.split("\\|")[1]);
-        List<Room> rooms = roomsRepo.inWhichRoomsIsSender(user.getName());
+        List<Room> rooms = roomsRepo.findRoomByUserName(user.getName());
         String roomId;
         if (rooms.size() < 1) {
             roomId = "empty";
@@ -100,26 +103,26 @@ public class ServerAPI {
         output.println(roomId);
     }
 
-    private void exit(String message, PrintWriter output) {
+    private void logoutUserRequest(String message, PrintWriter output) {
         User userByName = usersRepo.findUserByName(message.split("\\|")[1]);
         boolean operationResult = usersRepo.getUserLists().remove(userByName);
         output.println(operationResult);
         //todo zamknij pokój gdy było ich tylko 2, odejmij z pokojów wielosobowych, odejmij z listy klientów
+        //ale to jest logout, to nie trzeba gdy robi logout, bo wyjsce z czatu to go kasuje z pokoii.
         log.info("User removed from usersRepo"); //todo second condition, when "false"
     }
 
-    private void userList(PrintWriter output) {
+    private void createAndReturnUserListToServer(PrintWriter output) {
         String collect = usersRepo.getUserLists().stream().map(User::getName).collect(Collectors.joining("|"));
         output.println(collect);
         log.info("User list prepared and sent");
     }
 
-    private void login(String message, PrintWriter output) {
+    private void loginUserAndReturnInfoToClient(String message, PrintWriter output) {
         String[] split = message.split("\\|");
         String userName = split[1];
         Socket socketFromInput = socket;
-
-        usersRepo.getUserLists().add(new User(userName, socketFromInput));
+        usersRepo.addUser(new User(userName, socketFromInput));
         output.println("true");
         log.info("User added");
     }

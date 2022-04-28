@@ -4,7 +4,6 @@ import chat.commons.User;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -26,9 +25,9 @@ public class UsersRepo {
         return addResult;
     }
 
-    public boolean removeUser(User user) {
+    public boolean removeUserFromRoom(String userName) {
         locker.writeLock().lock();
-        boolean removeResult = userLists.remove(user);
+        boolean removeResult = userLists.remove(findUserByName(userName));
         locker.writeLock().unlock();
         return removeResult;
     }
@@ -38,12 +37,5 @@ public class UsersRepo {
         User user = userLists.stream().filter(s -> s.getName().equals(name)).findFirst().get();
         locker.readLock().unlock();
         return user;
-    }
-
-    public Socket findSocketByUserName(String name) {
-        locker.readLock().lock();
-        Socket socket = userLists.stream().filter(s -> s.getName().equals(name)).findFirst().map(User::getSocket).get();
-        locker.readLock().unlock();
-        return socket;
     }
 }

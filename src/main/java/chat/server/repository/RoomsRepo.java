@@ -20,12 +20,12 @@ public class RoomsRepo {
         return room;
     }
 
-    public synchronized Room isTheRoomWithAllAskedUsers(List<String> userList) {
+/*    public synchronized Room isTheRoomWithAllAskedUsers(List<String> userList) {
 
         return null;
-    }
+    }*/
 
-    public synchronized List<Room> inWhichRoomsIsSender(String senderName) {
+    public synchronized List<Room> findRoomByUserName(String senderName) {
   /*      List<Room> rooms = null;
         for (Room room : roomsList) {
             if (room.getUserListInRoom().stream().filter(s->s.getName().equals(senderName)).count()>0) rooms.add(room);
@@ -38,8 +38,7 @@ public class RoomsRepo {
                         .count() > 0))
                 .collect(Collectors.toList());
 
-        log.info("Co zostało znalezione gdy szukano RoomByUserName=={}",collect.size());
-
+        log.info("List<Room> collect.size()={}",collect.size());
         return collect;
     }
 }

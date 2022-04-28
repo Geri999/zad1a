@@ -21,7 +21,7 @@ public class ChatService {
     public void joinToChat() {
         log.info("ChatService joinToChat() method started");
 
-        String roomId = checkingIfUserHasActiveChat();
+        String roomId = findRoomIdByClient(client);
         if ("empty".equals(roomId)) {
             System.out.println("You are not in any room right now");
             return;
@@ -33,38 +33,41 @@ public class ChatService {
     public void createAndBeginChat() {
         log.info("ChatService chat() method started");
 
-        String roomId = chatCreation();
-        if (roomId == null) return;
+        String roomId = chatRoomCreation();
+        if ("menu".equals(roomId)) return;
 
         readingThreadDemonCreation();
         chatConversation(roomId);
-    }
-//#################################################################################################################################################
 
-    private String checkingIfUserHasActiveChat() {
+    }
+
+    private String findRoomIdByClient(Client client) {
         String findRoomIdByUserNameMessage = MessageMapper.createFindRoomIdByUserNameMessage(Commands.$FIND_ROOM_ID_BY_USERNAME_MSG, client.getClientName());
         String roomId = WriterToServer.sendToServerWithResponse(findRoomIdByUserNameMessage, client);
         log.info("ID room by UserName={}", roomId);
         return "empty".equals(roomId) ? "empty" : roomId;
     }
 
-    private String chatCreation() {
+    private String chatRoomCreation() {
         Scanner sc = new Scanner(System.in);
         List<String> usersInvitedToChat = new ArrayList<>();
         usersInvitedToChat.add(client.getClientName());
 
-        List<String> allUsersOnline = ClientCommands.userListCommand(client);
+        List<String> allUsersOnline = ClientCommands.getUserListCommand(client);
 
         String inputUserName = "";
 
         System.out.println(allUsersOnline.stream().collect(Collectors.joining(", ", "Users on-Line: ", ".")));
         System.out.println("\n*** ADDING USERS TO ROOM ***");
-        System.out.printf("(Type \"exit\" to finish, \"menu\" to return to main menu.)\n");
+        System.out.println("- type \"end\" to finish adding users and start chat");
+        System.out.println("- type \"menu\" to return to main menu");
 
-        while (!(inputUserName.equalsIgnoreCase("exit"))) {
-            System.out.print("Please type name to add user to room (\"exit\" to finish): " + client.getPrompt());
+        while (true) {
+            System.out.print("Type the username you want to add to the room: " + client.getPrompt());
+
             inputUserName = sc.nextLine();
-            if (inputUserName.equals("menu")) return null;
+            if (inputUserName.equals("menu")) return "menu";
+            if (inputUserName.equalsIgnoreCase("end")) break;
 
             boolean isUserOnLine = allUsersOnline.contains(inputUserName);
             if (isUserOnLine) usersInvitedToChat.add(inputUserName);
@@ -101,6 +104,7 @@ public class ChatService {
                 case "@end":
                 case "@END":
                     loopCondition = false;
+                    text = client.getClientName()+ "leaved the room.";
                     message = MessageMapper.createChatTxtMessage(Commands.$LEAVING_THE_ROOM_REQUEST, client.getClientName(), roomId, text);
                     WriterToServer.sendToServer(message, client);
                     break;
@@ -122,26 +126,4 @@ public class ChatService {
         }
         System.out.println("**** End of conversation ****");
     }
-
-    @Deprecated
-    private void chatConversation1(String roomId) {
-        System.out.println("\n" + "*".repeat(20) + "CHAT STARTED:" + "*".repeat(20));
-        System.out.println("(type @END to stop conversation)");
-        System.out.println("(type @SEND to enter file sending menu)");
-        System.out.println("Ask your other chat participants to enter the room (menu item 4)");
-        String text;
-        Scanner sc = new Scanner(System.in);
-        while (!(text = sc.nextLine()).matches("@end|@END")) {
-            //todo: sprawdzenie różnych komend wysłanych z serwera np. koniec rozmowy "@END" i itd. easy! Wysłać do servera komenda zakończenia, itp
-            String message = MessageMapper.createChatTxtMessage(Commands.$BROADCAST_TEXT_MSG, client.getClientName(), roomId, text);
-            log.info(Commands.$BROADCAST_TEXT_MSG.toString());
-            log.info(client.getClientName());
-            log.info(roomId);
-            log.info(text);
-            WriterToServer.sendToServer(message, client);
-        }
-        System.out.println("**** End of conversation ****");
-    }
-
-
 }
